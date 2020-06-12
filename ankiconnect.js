@@ -54,7 +54,9 @@ const notesFieldMap = async ({ queryString, field, callback }) => {
     const origin = note.fields[field].value
     const processed = callback(origin)
     console.log(`${id} modified: ${processed !== origin}`)
-
+    if (processed === origin) {
+      continue
+    }
     try {
       // console.log(callback(origin))
       await invoke('updateNoteFields', 6, {
@@ -73,6 +75,36 @@ const notesFieldMap = async ({ queryString, field, callback }) => {
   }
 }
 
+const notesMultiFieldMap = async ({ queryString, callback }) => {
+  const notesID = await query(queryString)
+  for await (const [id, note] of notesInfo(notesID)) {
+    const fieldValuePairs = {}
+    for (const [k, v] of Object.entries(note.fields)) {
+      fieldValuePairs[k] = v.value
+    }
+    // console.log(fieldValuePairs)
+    const processedFields = callback(fieldValuePairs)
+    if (!processedFields) {
+      console.log('already processed')
+      continue
+    }
+    console.log(processedFields)
+    try {
+      // console.log(callback(origin))
+      await invoke('updateNoteFields', 6, {
+        note: {
+          id,
+          fields: processedFields
+        }
+      })
+    } catch (error) {
+      console.log(error)
+      break
+    }
+  }
+}
+
 module.exports = {
-  notesFieldMap: notesFieldMap
+  notesFieldMap,
+  notesMultiFieldMap
 }

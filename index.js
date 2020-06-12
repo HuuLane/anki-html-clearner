@@ -1,11 +1,26 @@
 const cleaner = require('./htmlcleaner')
-const { notesFieldMap } = require('./ankiconnect')
+const { notesFieldMap, notesMultiFieldMap } = require('./ankiconnect')
 
 // main
 ;(async function () {
-  notesFieldMap({
+  // notesFieldMap({
+  //   queryString: 'note:macmillan7000',
+  //   field: 'expression',
+  //   callback: origin => cleaner(origin)
+  // })
+
+  notesMultiFieldMap({
     queryString: 'note:macmillan7000',
-    field: 'expression',
-    callback: origin => cleaner(origin)
+    callback: ({ expression }) => {
+      const i = expression.indexOf('[')
+      if (i === -1) {
+        return null
+      }
+
+      return {
+        expression: expression.slice(0, i).trim(),
+        audio: expression.slice(i)
+      }
+    }
   })
 })()
