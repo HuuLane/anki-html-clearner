@@ -48,7 +48,7 @@ async function * notesInfo (notesID) {
   }
 }
 
-const updateNotesField = async (queryString, field, callback) => {
+const notesFieldMap = async ({ queryString, field, callback }) => {
   const notesID = await query(queryString)
   for await (const [id, note] of notesInfo(notesID)) {
     const origin = note.fields[field].value
@@ -74,5 +74,5 @@ const updateNotesField = async (queryString, field, callback) => {
 }
 
 module.exports = {
-  updateNotesField
+  notesFieldMap: notesFieldMap
 }
