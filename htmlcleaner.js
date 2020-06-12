@@ -14,8 +14,5 @@ const defaults = {
 }
 
 module.exports = cleaner = (data) => {
-  // console.log(options[option])
-  // const r = unescape(sanitizeHtml(data, options[option]))
-  // return r
   return sanitizeHtml(data, defaults)
 }
